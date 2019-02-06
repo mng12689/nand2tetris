@@ -47,24 +47,17 @@ class Math {
      *  the Jack expressions x*y and multiply(x,y) return the same value.
      */
     function int multiply(int x, int y) {
-      var int t, b, sum, n, shifted;
-      if ( x > y ) {
-        let t = x;
-        let b = y;
-      } else {
-        let t = y;
-        let b = x;
-      }
+      var int sum, n, shifted;
 
       let sum = 0;
-      let shifted = b;
       let n = 0;
-      while ( bitArray[n] < b + 1 ) {
-        if ( bitArray[n] & b ) {
+      let shifted = x;
+      while ( n < 16 ) {
+        if ( ~((bitArray[n] & y) = 0) ) {
           let sum = sum + shifted;
         }
-        let shifted = shifted + shifted;
         let n = n + 1;
+        let shifted = shifted + shifted;
       }
       return sum;
     }
@@ -75,36 +68,41 @@ class Math {
      *  the Jack expressions x/y and divide(x,y) return the same value.
      */
     function int divide(int x, int y) {
-        var q;
-        if ( y > x ) {
-          return 0;
-        }
-        let q = divide(x, 2* y);
-        if ( x - 2 * q * y < y ) {
-          let result = 2 * q;
-        } else {
-          let result = 2 * q + 1;
-        }
+      var int m;
+      let m = 1;
+      if ( (( x < 0 ) & ( y > 0 )) | ((x > 0) & ( y < 0 )) ) {
+         let m = -1;
+      }
+      return Math._divide( Math.abs(x), Math.abs(y)) * m;
+    }
+
+    function int _divide(int x, int y) {
+      var int q;
+      if ( (y > x) | ( y < 0 ) ) {
+        return 0;
+      }
+      let q = Math._divide(x, 2* y);
+      if ( (x - ( 2 * q * y )) < y ) {
+        return 2 * q;
+      } else {
+        return 2 * q + 1;
+      }
     }
 
     /** Returns the integer part of the square root of x. */
     function int sqrt(int x) {
-        var int y,j,temp,tempQ;
-
-        let y = 0;
-        let j = 7;
-
-        while(~(j < 0)){
-            let temp = y + bitArray[j];
-            let tempQ = temp * temp;
-            //avoid overflow
-            if(~(tempQ > x) & (tempQ > 0)){
-                let y = temp;
-            }
-            let j = j - 1;
+      var int y, j, tmp, tSq;
+      let y = 0;
+      let j = (16/2) - 1;
+      while ( ~(j < 0) ) {
+        let tmp = y + bitArray[j];
+        let tSq = tmp * tmp;
+        if ( ~(tSq > x) & (tSq > 0) ) {
+          let y = tmp;
         }
-
-        return y;
+        let j = j - 1;
+      }
+      return y;
     }
 
     /** Returns the greater number. */

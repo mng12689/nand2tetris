@@ -1,7 +1,7 @@
 function Sys.init 0
-call Math.init 0
-pop temp 0
 call Memory.init 0
+pop temp 0
+call Math.init 0
 pop temp 0
 call Output.init 0
 pop temp 0
@@ -28,10 +28,6 @@ label WHILE_EXP0
 push local 0
 push argument 0
 lt
-push constant 10000
-call Math.multiply 2
-push constant 10000
-call Math.multiply 2
 not
 if-goto WHILE_END0
 push local 0

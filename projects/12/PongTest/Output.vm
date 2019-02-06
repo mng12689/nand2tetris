@@ -505,15 +505,15 @@ push constant 0
 call Output.create 12
 pop temp 0
 push constant 65
-push constant 0
-push constant 0
-push constant 0
-push constant 0
-push constant 0
-push constant 0
-push constant 0
-push constant 0
-push constant 0
+push constant 12
+push constant 30
+push constant 51
+push constant 51
+push constant 63
+push constant 51
+push constant 51
+push constant 51
+push constant 51
 push constant 0
 push constant 0
 call Output.create 12
@@ -1618,6 +1618,20 @@ label WHILE_END0
 push constant 1
 push static 1
 add
+pop pointer 1
+push that 0
+push constant 63
+eq
+if-goto IF_TRUE1
+goto IF_FALSE1
+label IF_TRUE1
+call Output.println 0
+pop temp 0
+goto IF_END1
+label IF_FALSE1
+push constant 1
+push static 1
+add
 push constant 1
 push static 1
 add
@@ -1629,6 +1643,7 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
+label IF_END1
 push constant 0
 return
 function Output.printString 1
@@ -1676,7 +1691,7 @@ push static 1
 add
 pop pointer 1
 push that 0
-push constant 23
+push constant 22
 lt
 if-goto IF_TRUE0
 goto IF_FALSE0
@@ -1695,6 +1710,17 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
+goto IF_END0
+label IF_FALSE0
+push constant 0
+push static 1
+add
+push constant 0
+pop temp 0
+pop pointer 1
+push temp 0
+pop that 0
+label IF_END0
 push constant 1
 push static 1
 add
@@ -1703,7 +1729,6 @@ pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
-label IF_FALSE0
 push constant 0
 return
 function Output.backSpace 0
@@ -1730,7 +1755,7 @@ label IF_TRUE1
 push constant 1
 push static 1
 add
-push constant 64
+push constant 63
 pop temp 0
 pop pointer 1
 push temp 0

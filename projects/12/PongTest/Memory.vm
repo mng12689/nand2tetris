@@ -43,7 +43,7 @@ push temp 0
 pop that 0
 push constant 0
 return
-function Memory.alloc 2
+function Memory.alloc 3
 push static 2
 pop local 0
 label WHILE_EXP0
@@ -52,49 +52,46 @@ push constant 0
 gt
 not
 if-goto WHILE_END0
-push local 0
 push constant 1
-add
-push static 1
+push local 0
 add
 pop pointer 1
 push that 0
 pop local 1
 push local 1
-push argument 0
-gt
-push constant 1
+push constant 2
 add
+push argument 0
+lt
+not
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
-push local 0
-push constant 1
-add
-push static 1
-add
 push local 1
 push argument 0
 push constant 2
 add
 sub
+pop local 2
+push constant 1
+push local 0
+add
+push local 2
 pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
 push local 0
-push local 1
+push constant 2
+add
+push local 2
 add
 push constant 2
 add
-push argument 0
-push constant 2
-add
-sub
 return
 label IF_FALSE0
+push constant 0
 push local 0
-push static 1
 add
 pop pointer 1
 push that 0
@@ -108,12 +105,14 @@ push constant 0
 push static 3
 add
 push argument 0
+push constant 2
+sub
 pop temp 0
 pop pointer 1
 push temp 0
 pop that 0
 push constant 0
-push argument 0
+push static 3
 add
 pop pointer 1
 push that 0

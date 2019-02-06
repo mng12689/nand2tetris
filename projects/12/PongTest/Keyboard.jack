@@ -13,6 +13,7 @@ class Keyboard {
     /** Initializes the keyboard. */
     function void init() {
       let kb = 24576;
+      return;
     } 
 
     /**
@@ -45,8 +46,8 @@ class Keyboard {
      * of the pressed key.
      */
     function char readChar() {
-      var key, c;
-      key = Keyboard.keyPressed();
+      var char key, c;
+      let key = Keyboard.keyPressed();
       while ( key = 0 ) {
         let key = Keyboard.keyPressed();
       }
@@ -54,6 +55,7 @@ class Keyboard {
       while ( key = c ) {
         let key = Keyboard.keyPressed();
       }
+      do Output.printChar(c);
       return c;
     }
 
@@ -78,7 +80,7 @@ class Keyboard {
             do line.eraseLastChar();
           }
         } else {
-          do line.append(last);
+          do line.appendChar(last);
         }
         let last = Keyboard.readChar();
       }
@@ -109,12 +111,12 @@ class Keyboard {
             do line.eraseLastChar();
           }
         } else {
-          do line.append(last);
+          do line.appendChar(last);
         }
         let last = Keyboard.readChar();
       }
 
       do Output.printString(line);
-      return line.toInt();
+      return line.intValue();
     }
 }
