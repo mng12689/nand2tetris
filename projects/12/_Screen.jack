@@ -1,0 +1,115 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 512 rows (indexed 0..511, top to bottom)
+ * of 256 pixels each (indexed 0..255, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+class _Screen {
+
+    static boolean color;
+    static Array screen;
+    
+    /** Initializes the Screen. */
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+
+    if ( 1 = 2 ) {
+//         var int xLeft, xRight;
+//         var in baseAddr, bytes, msbs, mask, addr;
+         
+         let xLeft = Math.min(x1, x2);
+         let xRight = Math.max(x1, x2);
+         let baseAddr = xLeft/16 + _Screen.mod(xLeft, 16);
+         
+         let bytes = (xRight - xLeft)/16;
+         
+         let msbs = _Screen.mod((xRight - xLeft), 16);
+         let mask = (_Screen.pow(2,(msbs + 1)) - 1 ) * _Screen.pow(2, 16-msbs);
+
+         let addr = baseAddr;
+         while ( bytes > 0 ) {
+           let screen[addr] = -1;
+           let addr = addr + 16;
+         }
+         let screen[addr] = screen[addr] | mask;
+         return;
+       }
+
+      if ( x1 = x2 ) {
+         var int yTop, yBottom, currY;
+         
+         let yTop = Math.min(y1, y2);
+         let yBottom = Math.max(y1, y2);
+         let currY = topY;
+         while ( currY < yBottom + 1 ) {
+           do _Screen.drawPixel(x, currY);
+           let currY = currY + 1;
+         }
+         return;
+      }
+      
+        // sloped line
+        var int h, v, dx, dy, diff;
+        
+        let dx = x2-x1;
+        let dy = y2-y1;
+
+        if ( x2 > x1 ) {
+          let xFactor = 1;
+        } else {
+          let xFactor = -1;
+        }
+
+        if ( y2 > y1 ) {
+          let yFactor = 1;
+        } else {
+          let yfactor = -1;
+        }
+
+        let h = 0;
+        let v = 0;
+        let diff = 0;
+        while ( h < dx & v < dy ) {
+          do _Screen.drawPixel( x + (h * xFactor) , y + (v * yFactor) );
+          if ( diff < 0 ) {
+            let h = h+1;
+            let diff = diff + dy;
+          } else {
+            let v = v+1;
+            let diff = diff - dx;
+          }
+        }
+      }
+      return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+      while ( y1 < y2+1 ) {
+        do _Screen.drawLine(x1, y1, x2, y1);
+        let y1 = y1 + 1;
+      }
+      return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+      var int currY, dy, hLength;
+      let currY = -r;
+      while ( currY < r + 1 ) {
+        //compute hLength
+        let dy = y - Math.abs(r);
+        let hLength = Math.sqrt((r*r) - (dy*dy));
+        do _Screen.drawLine(x-hLength, currY, x+hLength, currY);
+        let currY = currY + 1;
+      }
+      return;
+    }
+}

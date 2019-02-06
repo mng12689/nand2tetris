@@ -1,0 +1,225 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Screen.jack
+
+/**
+ * A library of functions for displaying graphics on the screen.
+ * The Hack physical screen consists of 512 rows (indexed 0..511, top to bottom)
+ * of 256 pixels each (indexed 0..255, left to right). The top left pixel on 
+ * the screen is indexed (0,0).
+ */
+class Screen {
+
+    static boolean color;
+    static Array screen;
+    
+    /** Initializes the Screen. */
+    function void init() {
+      let color = true;
+      let screen = 16384;
+      return;
+    }
+
+    /** Erases the entire screen. */
+    function void clearScreen() {
+      var int x, addr;
+      let x = 0;
+      let addr = screen;
+      
+      while ( x < (256 * 512) ) {
+        let screen[addr] = 0;
+        let x = x+16;
+      }
+      return;
+    }
+
+    /** Sets the current color, to be used for all subsequent drawXXX commands.
+     *  Black is represented by true, white by false. */
+    function void setColor(boolean b) {
+      let color = b;
+      return;
+    }
+
+    // TODO: move to Math when I get that class working
+    function int mod(int x, int y) {
+      return (x - ((x/y) * y));
+    }
+    
+    // TODO: move to Math when I get that class working
+    function int pow(int x, int y) {
+      var int c;
+
+      // hack
+      if ( x = 2 ) {
+        return Screen.twoToThe(y);
+      }
+      
+      if ( y = 0 ) {
+        return 1;
+      }
+      if ( y = 1) {
+        return x;
+      }
+
+      let c = 2;
+      while ( c < (y + 1) ) {
+        let x = x * x;
+        let c = c + 1;
+      }
+      return x;
+    }
+
+    function int twoToThe(int i) {
+      if ( i = 0 ) { return 1; }
+      if ( i = 1 ) { return 2; }
+      if ( i = 2 ) { return 4; }
+      if ( i = 3 ) { return 8; }
+      if ( i = 4 ) { return 16; }
+      if ( i = 5 ) { return 32; }
+      if ( i = 6 ) { return 64; }
+      if ( i = 7 ) { return 128; }
+      if ( i = 8 ) { return 256; }
+      if ( i = 9 ) { return 512; }
+      if ( i = 10 ) { return 1024; }
+      if ( i = 11 ) { return 2048; }
+      if ( i = 12 ) { return 4096; }
+      if ( i = 13 ) { return 8192; }
+      if ( i = 14 ) { return 16384; }
+      if ( i = 15 ) { return 16384 + 16384; }
+      return 0;
+    }
+    
+    /** Draws the (x,y) pixel, using the current color. */
+    function void drawPixel(int x, int y) {
+      var int byte, idx, val;
+      let byte = ( 512/16 * y ) + ( x/16 );
+      let idx = Screen.mod(x, 16);
+      let val = Screen.pow(2, idx);
+      let screen[byte] = screen[byte] | Screen.toColor(val);
+      return;
+    }
+
+    /** Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color. */
+    function void drawLine(int x1, int y1, int x2, int y2) {
+      var int xLeft, xRight, baseAddr, left, r, addr, val, mask, clearedByte;
+      var int yTop, yBottom, currY;
+      var int h, v, dx, dy, diff, xFactor, yFactor;
+
+      if ( (y1 = y2) & (x1 = x2) ) {
+        do Screen.drawPixel(x1, y1);
+        return;
+      }
+
+      if ( y1 = y2 ) {
+         
+         let xLeft = Math.min(x1, x2);
+         let xRight = Math.max(x1, x2);
+         let addr = (y1 * 32) +  (xLeft / 16);
+         let left = xRight - xLeft;
+         
+         let r = Screen.mod(xLeft, 16);
+         if ( r > 0 ) {
+           if ( left < ( 16 - r ) ) {
+             let val = (Screen.pow(2,r) * ( Screen.pow(2, left) -1 ));
+           } else {
+             let val = (Screen.pow(2, 16 - r) - 1) * Screen.pow(2, r);
+           }
+           let mask = ~(val);
+           let clearedByte = screen[addr] & mask;
+
+           let screen[addr] = Screen.toColor(val) | clearedByte;
+           let addr = addr + 1;
+           let left = left - (16 - r);
+         }
+         
+         while ( left > 15 ) {
+           let screen[addr] = Screen.toColor(-1);
+           let addr = addr + 1;
+           let left = left - 16;
+         }
+
+         if ( left > 0 ) {
+           let val = Screen.pow(2,left) -1;
+           let mask = ~(val);
+           let clearedByte = screen[addr] & mask;
+           let screen[addr] = Screen.toColor(val) | clearedByte;
+         }
+         return;
+      }
+
+      if ( x1 = x2 ) {
+         
+         let yTop = Math.min(y1, y2);
+         let yBottom = Math.max(y1, y2);
+         let currY = yTop;
+         while ( currY < (yBottom + 1) ) {
+           do Screen.drawPixel(x1, currY);
+           let currY = currY + 1;
+         }
+         return;
+      }      
+        // sloped line
+        
+        let dx = Math.abs(x2-x1);
+        let dy = Math.abs(y2-y1);
+
+        if ( x2 > x1 ) {
+          let xFactor = 1;
+        } else {
+          let xFactor = -1;
+        }
+
+        if ( y2 > y1 ) {
+          let yFactor = 1;
+        } else {
+          let yFactor = -1;
+        }
+
+        let h = 0;
+        let v = 0;
+        let diff = 0;
+        while ( (h < dx) & (v < dy) ) {
+          do Screen.drawPixel( x1 + (h * xFactor) , y1 + (v * yFactor) );
+          if ( diff < 0 ) {
+            let h = h+1;
+            let diff = diff + dy;
+          } else {
+            let v = v+1;
+            let diff = diff - dx;
+          }
+        }
+      return;
+    }
+
+    /** Draws a filled rectangle whose top left corner is (x1, y1)
+     * and bottom right corner is (x2,y2), using the current color. */
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+      while ( y1 < ( y2 + 1 )) {
+        do Screen.drawLine(x1, y1, x2, y1);
+        let y1 = y1 + 1;
+      }
+      return;
+    }
+
+    /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
+    function void drawCircle(int x, int y, int r) {
+      var int currY, dy, hLength;
+      let currY = y - r;
+      while ( currY < (y + r + 1) ) {
+        //compute hLength
+        let dy = Math.abs(y - currY);
+        let hLength = Math.sqrt((r*r) - (dy*dy));
+        do Screen.drawLine(x-hLength, currY, x+hLength, currY);
+        let currY = currY + 1;
+      }
+      return;
+    }
+
+    function int toColor(int byte) {
+      if ( ~(color) ) {
+        return ~(byte);
+      }
+      return byte;
+    }
+}
